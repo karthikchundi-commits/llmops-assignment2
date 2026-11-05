@@ -41,7 +41,7 @@ setup() {
   if [ -z "${GEMINI_API_KEY:-}" ] && ! grep -qE '^GEMINI_API_KEY=.{20,}' .env 2>/dev/null; then
     say "Paste your Gemini API key (input hidden; saved to .env with mode 600)"
     read -rsp "GEMINI_API_KEY: " KEY; echo
-    KEY=$(printf "%s" "$KEY" | tr -cd "A-Za-z0-9_-")   # drop pasted whitespace/escape codes
+    KEY=$(printf "%s" "$KEY" | grep -o "AIza[0-9A-Za-z_-]{35}" | head -1)   # keep only the key itself (drops pasted escape codes/spaces)
     echo "  key length ${#KEY}, starts with ${KEY:0:4} (expected: 39, AIza)"
     (umask 077; printf 'GEMINI_API_KEY=%s\n' "$KEY" > .env)
   fi
